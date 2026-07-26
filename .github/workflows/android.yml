@@ -1,0 +1,42 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "main" ]  # Змініть на master, якщо ваша гілка master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/kivy/buildozer:latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Copy Pre-installed SDK from Docker Image
+      run: |
+        # 1. Створюємо цільову папку, де Buildozer шукає SDK у середовищі GitHub
+        mkdir -p /github/home/.buildozer/android/platform/
+        
+        # 2. Копіюємо ВЖЕ ГОТОВИЙ, вшитий розробниками Kivy Android SDK з образу
+        # Це перенесе повністю робочий sdkmanager, aidl та всі ліцензії
+        cp -r /home/user/.buildozer/android/platform/android-sdk /github/home/.buildozer/android/platform/ || true
+        
+        # 3. Даємо системі повні права на виконання бінарників Android
+        chmod -R +x /github/home/.buildozer/android/platform/android-sdk/ || true
+
+    - name: Build APK with Buildozer
+      run: |
+        git config --global --add safe.directory '*'
+        
+        # Запускаємо збірку. Buildozer миттєво знайде скопіований SDK і перейде до компіляції коду
+        yes | buildozer android debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
+        path: bin/*.apk
