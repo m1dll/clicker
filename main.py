@@ -74,7 +74,7 @@ class GameScreen(Screen):
     def start_game(self):
         self.ids.fish.new_fish()
 
-    # --- СИСТЕМА ДОСТИЖЕНИЙ ---
+    # --- СИСТЕМА ДОСЯГНЕНЬ ---
     def check_achievements(self):
         app = App.get_running_app()
         if app.damage_multiplier == 1.0 and self.coins >= 50:
@@ -95,7 +95,7 @@ class GameScreen(Screen):
         else:
             self.ach_text = "All Achievements Unlocked! Max Power!"
 
-    # --- МАГАЗИН ЗА МОНЕТЫ ---
+    # --- МАГАЗИН ЗА МОНЕТИ ---
     def buy_click(self):
         app = App.get_running_app()
         cost = app.click_power * 15
@@ -119,7 +119,7 @@ class GameScreen(Screen):
             self.coins -= cost
             app.crit_chance += 5
 
-    # --- СПАВН ЗОЛОТОЙ РЫБКИ ---
+    # --- СПАВН ЗОЛОТОЇ РИБКИ ---
     def spawn_golden_fish(self, dt):
         if self.ids.get('game_layout'):
             gold_fish = GoldenFish()
@@ -178,7 +178,7 @@ class SettingsScreen(Screen):
     def go_menu(self):
         App.get_running_app().change_screen("menu", "right")
 
-# ===== КЛАС ЗОЛОТОЙ РЫБКИ =====
+# ===== КЛАС ЗОЛОТОЇ РИБКИ =====
 class GoldenFish(Image):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -249,18 +249,18 @@ class Fish(Image):
         
         base_hp = app.FISHES[self.fish_current]['hp']
         
-        # --- НОВАЯ ЭКСПОНЕНЦИАЛЬНАЯ ФОРМУЛА УМНОЖЕНИЯ ЗДОРОВЬЯ ---
-        # Каждый побежденный смайлик умножает HP следующего на 1.12 (рост на 12% от ТЕКУЩЕГО значения)
-        # Дополнительно плавно увеличиваем сложность в зависимости от номера текущего уровня (app.LEVEL)
+        # --- НОВА ЕКСПОНЕНЦІАЛЬНА ФОРМУЛА МНОЖЕННЯ ЗДОРОВ'Я ---
+        # Кожен переможений смайлик множить HP наступного на 1.12 (зростання на 12% від ПОТОЧНОГО значення)
+        # Додатково плавно збільшуємо складність залежно від номера поточного рівня (app.LEVEL)
         level_scale = 1.0 + (app.LEVEL * 0.05)
         hp_multiplier = (1.12 ** app.total_fishes_defeated) * level_scale
         
-        # Для боссов делаем дополнительное умножение, чтобы они выделялись
+        # Для босів робимо додаткове множення, щоб вони виділялися
         if self.fish_current == 'boss':
             self.hp_current = int(base_hp * hp_multiplier * 2.0)
             self.base_size = (250, 250)
         elif self.fish_current == 'cloun':
-            self.hp_current = int(base_hp * hp_multiplier * 3.5) # Клоун в 3.5 раза толще!
+            self.hp_current = int(base_hp * hp_multiplier * 3.5) # Клоун у 3.5 раза товщий!
             self.base_size = (280, 280)
         else:
             self.hp_current = int(base_hp * hp_multiplier)
@@ -430,7 +430,7 @@ class Fish(Image):
         self.next_fish_logic()
         return super().on_touch_down(touch)
 
-# ===== ГОЛОВНИЙ ЗАСТОСУНОК =====
+# ===== ГОЛОВНИЙ ДОДАТОК =====
 class ClickerApp(App):
     LEVEL = 0
     click_power = NumericProperty(1)
@@ -441,7 +441,7 @@ class ClickerApp(App):
     total_fishes_defeated = 0 
     total_bosses_defeated = 0
     
-    # Базовые значения HP (теперь они умножаются по экспоненте)
+    # Базові значення HP (тепер вони множаться по експоненті)
     FISHES = {
         'fish1': {'source': 'assets/images/fish1.png', 'hp': 15},
         'fish2': {'source': 'assets/images/fish2.png', 'hp': 30},
@@ -452,7 +452,7 @@ class ClickerApp(App):
     LEVELS = []
 
     def build(self):
-        # Генерируем 30 уровней. Каждый 7-й — с Клоуном.
+        # Генеруємо 30 рівнів. Кожен 7-й — з Клоуном.
         for lvl_num in range(1, 31):
             if lvl_num % 7 == 0:
                 self.LEVELS.append(['fish1', 'fish2', 'fish2', 'cloun'])
