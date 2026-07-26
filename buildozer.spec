@@ -9,7 +9,7 @@ title = My Clicker # замінити на назву застосунку
 package.name = myclicker # замінити на скорочену назву застосунку
 # (str) Package domain (needed for android/ios packaging)
 
-package.domain = org.test # замінити на com.github.<ваше_ім'я_на_github>
+package.domain = com.github.m1dll # замінити на com.github.<ваше_ім'я_на_github>
 # (str) Source code where the main.py live
 source.dir = .
 
