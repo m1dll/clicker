@@ -1,0 +1,189 @@
+#:import from_hex kivy.utils.get_color_from_hex
+#:import colormap kivy.utils.colormap
+
+#:set main_color "#F3AF12"
+#:set main_color_dark "#F37C12"
+#:set shop_color "#2ECC71"
+#:set shop_color_dark "#27AE60"
+
+<Widget>:
+    font_name: 'assets/fonts/lemon-regular.ttf'
+
+<ButtonMenu@Button>:
+    font_size: "20sp"
+    size_hint: 1, 0.15
+    background_normal: ''
+    background_color: from_hex(main_color)
+    color: 0, 0, 0, 1
+    on_press:
+        self.background_color = from_hex(main_color_dark)
+    on_release:
+        self.background_color = from_hex(main_color)
+
+<ButtonShop@Button>:
+    font_size: "12sp"
+    background_normal: ''
+    background_color: from_hex(shop_color)
+    color: 1, 1, 1, 1
+    on_press:
+        self.background_color = from_hex(shop_color_dark)
+    on_release:
+        self.background_color = from_hex(shop_color)
+
+<Fish>:
+    allow_stretch: True
+    keep_ratio: True
+    canvas.before:
+        PushMatrix 
+        Rotate:
+            angle: root.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix                  
+
+<MenuScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "20dp"
+        spacing: "20dp"
+        canvas.before:
+            Rectangle:
+                source: "assets/images/background.jpg"
+                pos: self.pos
+                size: self.size
+            Color:
+                rgba: 0, 0, 0, 0.35
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "assets/images/click.png"
+            size_hint: 1, 0.5
+
+        Label:
+            text: "SUMMER\nCLICKER"
+            font_size: "40sp"
+            size_hint: 1, 0.2
+
+        ButtonMenu:
+            text: "PLAY"
+            on_press: root.go_game()
+
+        ButtonMenu:
+            text: "SETTINGS"
+            on_press: root.go_settings()
+
+        ButtonMenu:
+            text: "EXIT"
+            on_press: root.exit_app()
+
+<GameScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "12dp"
+        spacing: "12dp"
+        canvas.before: 
+            Rectangle:
+                source: "assets/images/background_game.jpg"
+                pos: self.pos
+                size: self.size
+            Color:
+                rgba: 0, 0, 0, 0.2
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Информационная панель (Уровень, Очки, Монеты)
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: "40dp"
+            Label:
+                text: "Lvl " + str(root.level)
+                font_size: "20sp"
+                color: 0, 0, 1, 1
+            Label:
+                text: "Score: " + str(root.score)
+                font_size: "20sp"
+                color: 0, 0, 1, 1
+            Label:
+                text: "Coins: " + str(root.coins) + " 🪙"
+                font_size: "20sp"
+                color: 1, 0.8, 0, 1
+
+        # Плашка отображения ачивок
+        Label:
+            text: root.ach_text
+            font_size: "14sp"
+            color: 1, 0.5, 0, 1
+            size_hint_y: None
+            height: "20dp"
+            outline_width: 1
+            outline_color: 0, 0, 0, 1
+
+        FloatLayout:
+            id: game_layout
+            ProgressBar:
+                id: hp_bar
+                max: 10
+                value: 10
+                size_hint: 0.8, None
+                height: "20dp"
+                pos_hint: {"center_x": 0.5, "top": 0.98}
+                opacity: 0
+
+            Fish:
+                id: fish
+                size_hint: None, None
+                size: "200dp", "200dp"
+
+            Label:
+                id: level_complete
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+                text: "LEVEL\nCOMPLETE!"
+                font_size: "32sp"
+                color: 0, 1, 0, 1
+                opacity: 0
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                outline_width: 3
+                outline_color: 0.17, 0.74, 0.33, 0.1
+
+        # Магазин из трех колонок (Клик, Автокликер, Шанс крита)
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: "65dp"
+            spacing: "8dp"
+            
+            ButtonShop:
+                text: "Click +1 DMG\nCost: " + str(app.click_power * 15)
+                on_press: root.buy_click()
+                
+            ButtonShop:
+                text: "Autoclick +1\nCost: " + str((app.auto_click_speed + 1) * 30)
+                on_press: root.buy_autoclick()
+
+            ButtonShop:
+                text: "Crit +" + str(app.crit_chance) + "%\nCost: " + str(int((app.crit_chance / 10) * 40)) if app.crit_chance < 50 else "MAXED"
+                on_press: root.buy_crit()
+
+        ButtonMenu:
+            text: "Back to Menu"
+            size_hint_y: None
+            height: "45dp"
+            on_press: root.go_menu()
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "20dp"
+        spacing: "20dp"
+        Label:
+            text: "Settings"
+            font_size: "40sp"
+        ButtonMenu:
+            text: "Back to Menu"
+            on_press: root.go_menu()
